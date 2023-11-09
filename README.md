@@ -1,8 +1,3 @@
-# Archiving notice:
-
-This library is no longer in use and maintenance. All further development related to chainbridge will happen in the [new](https://github.com/ChainSafe/chainbridge-core) repo. More detailed information about chainbridge-core you can find in its readme or [Discussions](https://github.com/ChainSafe/chainbridge-core/discussions). 
-
-If you already running an old ChainBridge version please consider checking **[chainbridge-migration](https://github.com/ChainSafe/chainbridge-migration)** scripts that allow migrating to a newer version of chainbridge.
 # ChainBridge
 
 <a href="https://discord.gg/ykXsJKfhgq">
@@ -53,10 +48,9 @@ docker build -t chainsafe/chainbridge .
 ```
 
 To start ChainBridge:
-* `docker run -v` uses an absolute path rather than a relative one.
 
 ``` 
-docker run -v $(pwd)/config.json:/config.json chainsafe/chainbridge
+docker run -v ./config.json:/config.json chainsafe/chainbridge
 ```
 
 # Configuration
@@ -89,7 +83,6 @@ Ethereum chains support the following additional options:
     "erc721Handler": "0x1234...",    // Address of erc721 handler (required)
     "genericHandler": "0x1234...",   // Address of generic handler (required)
     "maxGasPrice": "0x1234",         // Gas price for transactions (default: 20000000000)
-    "minGasPrice": "0x1234",         // Minimum gas price for transactions (default: 0)
     "gasLimit": "0x1234",            // Gas limit for transactions (default: 6721975)
     "gasMultiplier": "1.25",         // Multiplies the gas price by the supplied value (default: 1)
     "http": "true",                  // Whether the chain connection is ws or http (default: false)
@@ -127,7 +120,7 @@ To use secure keys, see `chainbridge accounts --help`. The keystore password can
 
 To import external ethereum keys, such as those generated with geth, use `chainbridge accounts import --ethereum /path/to/key`.
 
-To import private keys as keystores, use `chainbridge accounts import --privateKey key`.
+To import private keys as keystores, use `chainbridge account import --privateKey key`.
 
 For testing purposes, chainbridge provides 5 test keys. The can be used with `--testkey <name>`, where `name` is one of `Alice`, `Bob`, `Charlie`, `Dave`, or `Eve`. 
 

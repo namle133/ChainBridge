@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"testing"
 
-	utils "github.com/ChainSafe/ChainBridge/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/core"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -31,7 +30,6 @@ func TestParseChainConfig(t *testing.T) {
 			"gasLimit":           "10",
 			"gasMultiplier":      "1",
 			"maxGasPrice":        "20",
-			"minGasPrice":        "0",
 			"http":               "true",
 			"startBlock":         "10",
 			"blockConfirmations": "50",
@@ -58,71 +56,6 @@ func TestParseChainConfig(t *testing.T) {
 		genericHandlerContract: common.HexToAddress("0x1234"),
 		gasLimit:               big.NewInt(10),
 		maxGasPrice:            big.NewInt(20),
-		minGasPrice:            big.NewInt(0),
-		gasMultiplier:          big.NewFloat(1),
-		http:                   true,
-		startBlock:             big.NewInt(10),
-		blockConfirmations:     big.NewInt(50),
-		egsApiKey:              "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-		egsSpeed:               "fast",
-	}
-
-	if !reflect.DeepEqual(&expected, out) {
-		t.Fatalf("Output not expected.\n\tExpected: %#v\n\tGot: %#v\n", &expected, out)
-	}
-}
-
-// TestParseChainConfigHex tests the parseChainConfig with hex values
-func TestParseChainConfigHex(t *testing.T) {
-	commonHexValue := "0x1234"
-	expectedHex, parseErr := utils.ParseUint256OrHex(&commonHexValue)
-	if parseErr != nil {
-		t.Fatalf("unable to parse value %s, %v", commonHexValue, parseErr)
-	}
-
-	input := core.ChainConfig{
-		Name:         "chain",
-		Id:           1,
-		Endpoint:     "endpoint",
-		From:         "0x0",
-		KeystorePath: "./keys",
-		Insecure:     false,
-		Opts: map[string]string{
-			"bridge":             "0x1234",
-			"erc20Handler":       "0x1234",
-			"erc721Handler":      "0x1234",
-			"genericHandler":     "0x1234",
-			"gasLimit":           commonHexValue,
-			"gasMultiplier":      "1",
-			"maxGasPrice":        commonHexValue,
-			"minGasPrice":        commonHexValue,
-			"http":               "true",
-			"startBlock":         "10",
-			"blockConfirmations": "50",
-			"egsApiKey":          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", // fake key
-			"egsSpeed":           "fast",
-		},
-	}
-
-	out, err := parseChainConfig(&input)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	expected := Config{
-		name:                   "chain",
-		id:                     1,
-		endpoint:               "endpoint",
-		from:                   "0x0",
-		keystorePath:           "./keys",
-		bridgeContract:         common.HexToAddress("0x1234"),
-		erc20HandlerContract:   common.HexToAddress("0x1234"),
-		erc721HandlerContract:  common.HexToAddress("0x1234"),
-		genericHandlerContract: common.HexToAddress("0x1234"),
-		gasLimit:               expectedHex,
-		maxGasPrice:            expectedHex,
-		minGasPrice:            expectedHex,
 		gasMultiplier:          big.NewFloat(1),
 		http:                   true,
 		startBlock:             big.NewInt(10),
@@ -154,7 +87,6 @@ func TestParseChainConfigWithNoBlockConfirmations(t *testing.T) {
 			"gasLimit":       "10",
 			"gasMultiplier":  "1",
 			"maxGasPrice":    "20",
-			"minGasPrice":    "0",
 			"http":           "true",
 			"startBlock":     "10",
 		},
@@ -178,7 +110,6 @@ func TestParseChainConfigWithNoBlockConfirmations(t *testing.T) {
 		genericHandlerContract: common.HexToAddress("0x1234"),
 		gasLimit:               big.NewInt(10),
 		maxGasPrice:            big.NewInt(20),
-		minGasPrice:            big.NewInt(0),
 		gasMultiplier:          big.NewFloat(1),
 		http:                   true,
 		startBlock:             big.NewInt(10),
@@ -207,7 +138,6 @@ func TestChainConfigOneContract(t *testing.T) {
 			"erc20Handler":  "0x1234",
 			"gasLimit":      "10",
 			"maxGasPrice":   "20",
-			"minGasPrice":   "0",
 			"gasMultiplier": "1",
 			"http":          "true",
 			"startBlock":    "10",
@@ -230,7 +160,6 @@ func TestChainConfigOneContract(t *testing.T) {
 		erc20HandlerContract: common.HexToAddress("0x1234"),
 		gasLimit:             big.NewInt(10),
 		maxGasPrice:          big.NewInt(20),
-		minGasPrice:          big.NewInt(0),
 		gasMultiplier:        big.NewFloat(1),
 		http:                 true,
 		startBlock:           big.NewInt(10),
@@ -320,7 +249,6 @@ func TestEthGasStationDefaultSpeed(t *testing.T) {
 			"gasLimit":       "10",
 			"gasMultiplier":  "1",
 			"maxGasPrice":    "20",
-			"minGasPrice":    "0",
 			"http":           "true",
 			"startBlock":     "10",
 			"egsApiKey":      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
@@ -346,7 +274,6 @@ func TestEthGasStationDefaultSpeed(t *testing.T) {
 		genericHandlerContract: common.HexToAddress("0x1234"),
 		gasLimit:               big.NewInt(10),
 		maxGasPrice:            big.NewInt(20),
-		minGasPrice:            big.NewInt(0),
 		gasMultiplier:          big.NewFloat(1),
 		http:                   true,
 		startBlock:             big.NewInt(10),
@@ -376,7 +303,6 @@ func TestEthGasStationCustomSpeed(t *testing.T) {
 			"gasLimit":       "10",
 			"gasMultiplier":  "1",
 			"maxGasPrice":    "20",
-			"minGasPrice":    "0",
 			"http":           "true",
 			"startBlock":     "10",
 			"egsApiKey":      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
@@ -402,7 +328,6 @@ func TestEthGasStationCustomSpeed(t *testing.T) {
 		genericHandlerContract: common.HexToAddress("0x1234"),
 		gasLimit:               big.NewInt(10),
 		maxGasPrice:            big.NewInt(20),
-		minGasPrice:            big.NewInt(0),
 		gasMultiplier:          big.NewFloat(1),
 		http:                   true,
 		startBlock:             big.NewInt(10),
@@ -432,7 +357,6 @@ func TestEthGasStationInvalidSpeed(t *testing.T) {
 			"gasLimit":       "10",
 			"gasMultiplier":  "1",
 			"maxGasPrice":    "20",
-			"minGasPrice":    "0",
 			"http":           "true",
 			"startBlock":     "10",
 			"egsApiKey":      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
@@ -458,7 +382,6 @@ func TestEthGasStationInvalidSpeed(t *testing.T) {
 		genericHandlerContract: common.HexToAddress("0x1234"),
 		gasLimit:               big.NewInt(10),
 		maxGasPrice:            big.NewInt(20),
-		minGasPrice:            big.NewInt(0),
 		gasMultiplier:          big.NewFloat(1),
 		http:                   true,
 		startBlock:             big.NewInt(10),
