@@ -1,0 +1,236 @@
+# github.com/ChainSafe/chainbridge-substrate-events v0.0.0-20200527185312-f0db52b1c793
+github.com/ChainSafe/chainbridge-substrate-events
+# github.com/ChainSafe/log15 v1.0.0
+github.com/ChainSafe/log15
+# github.com/VictoriaMetrics/fastcache v1.5.3
+github.com/VictoriaMetrics/fastcache
+# github.com/aristanetworks/goarista v0.0.0-20170210015632-ea17b1a17847
+github.com/aristanetworks/goarista/monotime
+# github.com/awnumar/memcall v0.1.2
+github.com/awnumar/memcall
+# github.com/awnumar/memguard v0.22.3 => github.com/ChainVerse-Team/memguard v0.0.1-beta
+github.com/awnumar/memguard
+github.com/awnumar/memguard/core
+# github.com/btcsuite/btcd v0.20.1-beta
+github.com/btcsuite/btcd/btcec
+# github.com/centrifuge/go-substrate-rpc-client v1.1.1-0.20200428140716-e238735648d6
+github.com/centrifuge/go-substrate-rpc-client
+github.com/centrifuge/go-substrate-rpc-client/client
+github.com/centrifuge/go-substrate-rpc-client/config
+github.com/centrifuge/go-substrate-rpc-client/gethrpc
+github.com/centrifuge/go-substrate-rpc-client/rpc
+github.com/centrifuge/go-substrate-rpc-client/rpc/author
+github.com/centrifuge/go-substrate-rpc-client/rpc/chain
+github.com/centrifuge/go-substrate-rpc-client/rpc/state
+github.com/centrifuge/go-substrate-rpc-client/rpc/system
+github.com/centrifuge/go-substrate-rpc-client/scale
+github.com/centrifuge/go-substrate-rpc-client/signature
+github.com/centrifuge/go-substrate-rpc-client/types
+github.com/centrifuge/go-substrate-rpc-client/xxhash
+# github.com/cespare/xxhash/v2 v2.1.1
+github.com/cespare/xxhash/v2
+# github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d
+github.com/cpuguy83/go-md2man/v2/md2man
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
+# github.com/deckarep/golang-set v0.0.0-20180603214616-504e848d77ea
+github.com/deckarep/golang-set
+# github.com/edsrzf/mmap-go v0.0.0-20160512033002-935e0e8a636c
+github.com/edsrzf/mmap-go
+# github.com/elastic/gosigar v0.14.2
+github.com/elastic/gosigar
+github.com/elastic/gosigar/sys/windows
+# github.com/ethereum/go-ethereum v1.9.13
+github.com/ethereum/go-ethereum
+github.com/ethereum/go-ethereum/accounts
+github.com/ethereum/go-ethereum/accounts/abi
+github.com/ethereum/go-ethereum/accounts/abi/bind
+github.com/ethereum/go-ethereum/accounts/external
+github.com/ethereum/go-ethereum/accounts/keystore
+github.com/ethereum/go-ethereum/accounts/scwallet
+github.com/ethereum/go-ethereum/accounts/usbwallet
+github.com/ethereum/go-ethereum/accounts/usbwallet/trezor
+github.com/ethereum/go-ethereum/common
+github.com/ethereum/go-ethereum/common/bitutil
+github.com/ethereum/go-ethereum/common/hexutil
+github.com/ethereum/go-ethereum/common/math
+github.com/ethereum/go-ethereum/common/mclock
+github.com/ethereum/go-ethereum/common/prque
+github.com/ethereum/go-ethereum/consensus
+github.com/ethereum/go-ethereum/consensus/clique
+github.com/ethereum/go-ethereum/consensus/ethash
+github.com/ethereum/go-ethereum/consensus/misc
+github.com/ethereum/go-ethereum/core
+github.com/ethereum/go-ethereum/core/bloombits
+github.com/ethereum/go-ethereum/core/rawdb
+github.com/ethereum/go-ethereum/core/state
+github.com/ethereum/go-ethereum/core/state/snapshot
+github.com/ethereum/go-ethereum/core/types
+github.com/ethereum/go-ethereum/core/vm
+github.com/ethereum/go-ethereum/crypto
+github.com/ethereum/go-ethereum/crypto/blake2b
+github.com/ethereum/go-ethereum/crypto/bn256
+github.com/ethereum/go-ethereum/crypto/bn256/cloudflare
+github.com/ethereum/go-ethereum/crypto/bn256/google
+github.com/ethereum/go-ethereum/crypto/ecies
+github.com/ethereum/go-ethereum/crypto/secp256k1
+github.com/ethereum/go-ethereum/eth/downloader
+github.com/ethereum/go-ethereum/ethclient
+github.com/ethereum/go-ethereum/ethdb
+github.com/ethereum/go-ethereum/ethdb/leveldb
+github.com/ethereum/go-ethereum/ethdb/memorydb
+github.com/ethereum/go-ethereum/event
+github.com/ethereum/go-ethereum/internal/ethapi
+github.com/ethereum/go-ethereum/log
+github.com/ethereum/go-ethereum/metrics
+github.com/ethereum/go-ethereum/p2p
+github.com/ethereum/go-ethereum/p2p/discover
+github.com/ethereum/go-ethereum/p2p/discv5
+github.com/ethereum/go-ethereum/p2p/enode
+github.com/ethereum/go-ethereum/p2p/enr
+github.com/ethereum/go-ethereum/p2p/nat
+github.com/ethereum/go-ethereum/p2p/netutil
+github.com/ethereum/go-ethereum/params
+github.com/ethereum/go-ethereum/rlp
+github.com/ethereum/go-ethereum/rpc
+github.com/ethereum/go-ethereum/signer/core
+github.com/ethereum/go-ethereum/signer/storage
+github.com/ethereum/go-ethereum/trie
+# github.com/gballet/go-libpcsclite v0.0.0-20190607065134-2772fd86a8ff
+github.com/gballet/go-libpcsclite
+# github.com/go-stack/stack v1.8.0
+github.com/go-stack/stack
+# github.com/golang/protobuf v1.3.2-0.20190517061210-b285ee9cfc6c
+github.com/golang/protobuf/proto
+github.com/golang/protobuf/protoc-gen-go/descriptor
+# github.com/golang/snappy v0.0.1
+github.com/golang/snappy
+# github.com/gorilla/websocket v1.4.1-0.20190629185528-ae1634f6a989
+github.com/gorilla/websocket
+# github.com/hashicorp/golang-lru v0.0.0-20160813221303-0a025b7e63ad
+github.com/hashicorp/golang-lru
+github.com/hashicorp/golang-lru/simplelru
+# github.com/huin/goupnp v0.0.0-20161224104101-679507af18f3
+github.com/huin/goupnp
+github.com/huin/goupnp/dcps/internetgateway1
+github.com/huin/goupnp/dcps/internetgateway2
+github.com/huin/goupnp/httpu
+github.com/huin/goupnp/scpd
+github.com/huin/goupnp/soap
+github.com/huin/goupnp/ssdp
+# github.com/jackpal/go-nat-pmp v1.0.2-0.20160603034137-1fa385a6f458
+github.com/jackpal/go-nat-pmp
+# github.com/karalabe/usb v0.0.0-20190919080040-51dc0efba356
+github.com/karalabe/usb
+# github.com/mattn/go-colorable v0.1.2
+github.com/mattn/go-colorable
+# github.com/mattn/go-isatty v0.0.8
+github.com/mattn/go-isatty
+# github.com/mattn/go-runewidth v0.0.4
+github.com/mattn/go-runewidth
+# github.com/naoina/go-stringutil v0.1.0
+github.com/naoina/go-stringutil
+# github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
+github.com/naoina/toml
+github.com/naoina/toml/ast
+# github.com/olekukonko/tablewriter v0.0.2-0.20190409134802-7e037d187b0c
+github.com/olekukonko/tablewriter
+# github.com/pborman/uuid v0.0.0-20170112150404-1b00554d8222
+github.com/pborman/uuid
+# github.com/pierrec/xxHash v0.1.5
+github.com/pierrec/xxHash/xxHash64
+# github.com/pkg/errors v0.9.1
+github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/prometheus/tsdb v0.6.2-0.20190402121629-4f204dcbc150
+github.com/prometheus/tsdb/fileutil
+# github.com/rjeczalik/notify v0.9.1
+github.com/rjeczalik/notify
+# github.com/rs/cors v0.0.0-20160617231935-a62a804a8a00
+github.com/rs/cors
+# github.com/rs/xhandler v0.0.0-20160618193221-ed27b6fd6521
+github.com/rs/xhandler
+# github.com/russross/blackfriday/v2 v2.0.1
+github.com/russross/blackfriday/v2
+# github.com/shurcooL/sanitized_anchor_name v1.0.0
+github.com/shurcooL/sanitized_anchor_name
+# github.com/status-im/keycard-go v0.0.0-20190316090335-8537d3370df4
+github.com/status-im/keycard-go/derivationpath
+# github.com/steakknife/bloomfilter v0.0.0-20180922174646-6819c0d2a570
+github.com/steakknife/bloomfilter
+# github.com/steakknife/hamming v0.0.0-20180906055917-c99c65617cd3
+github.com/steakknife/hamming
+# github.com/stretchr/testify v1.4.0
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
+# github.com/syndtr/goleveldb v1.0.1-0.20190923125748-758128399b1d
+github.com/syndtr/goleveldb/leveldb
+github.com/syndtr/goleveldb/leveldb/cache
+github.com/syndtr/goleveldb/leveldb/comparer
+github.com/syndtr/goleveldb/leveldb/errors
+github.com/syndtr/goleveldb/leveldb/filter
+github.com/syndtr/goleveldb/leveldb/iterator
+github.com/syndtr/goleveldb/leveldb/journal
+github.com/syndtr/goleveldb/leveldb/memdb
+github.com/syndtr/goleveldb/leveldb/opt
+github.com/syndtr/goleveldb/leveldb/storage
+github.com/syndtr/goleveldb/leveldb/table
+github.com/syndtr/goleveldb/leveldb/util
+# github.com/tyler-smith/go-bip39 v1.0.1-0.20181017060643-dbb3b84ba2ef
+github.com/tyler-smith/go-bip39
+github.com/tyler-smith/go-bip39/wordlists
+# github.com/urfave/cli v1.22.2
+github.com/urfave/cli
+# github.com/wsddn/go-ecdh v0.0.0-20161211032359-48726bab9208
+github.com/wsddn/go-ecdh
+# golang.org/x/crypto v0.5.0
+golang.org/x/crypto/blake2b
+golang.org/x/crypto/curve25519
+golang.org/x/crypto/curve25519/internal/field
+golang.org/x/crypto/hkdf
+golang.org/x/crypto/internal/alias
+golang.org/x/crypto/internal/poly1305
+golang.org/x/crypto/nacl/secretbox
+golang.org/x/crypto/pbkdf2
+golang.org/x/crypto/ripemd160
+golang.org/x/crypto/salsa20/salsa
+golang.org/x/crypto/scrypt
+golang.org/x/crypto/sha3
+golang.org/x/crypto/ssh/terminal
+# golang.org/x/net v0.5.0
+golang.org/x/net/context
+golang.org/x/net/html
+golang.org/x/net/html/atom
+golang.org/x/net/html/charset
+# golang.org/x/sys v0.4.0
+golang.org/x/sys/cpu
+golang.org/x/sys/internal/unsafeheader
+golang.org/x/sys/plan9
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# golang.org/x/term v0.4.0
+golang.org/x/term
+# golang.org/x/text v0.6.0
+golang.org/x/text/encoding
+golang.org/x/text/encoding/charmap
+golang.org/x/text/encoding/htmlindex
+golang.org/x/text/encoding/internal
+golang.org/x/text/encoding/internal/identifier
+golang.org/x/text/encoding/japanese
+golang.org/x/text/encoding/korean
+golang.org/x/text/encoding/simplifiedchinese
+golang.org/x/text/encoding/traditionalchinese
+golang.org/x/text/encoding/unicode
+golang.org/x/text/internal/language
+golang.org/x/text/internal/language/compact
+golang.org/x/text/internal/tag
+golang.org/x/text/internal/utf8internal
+golang.org/x/text/language
+golang.org/x/text/runes
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm
+# gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce
+gopkg.in/natefinch/npipe.v2
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2
