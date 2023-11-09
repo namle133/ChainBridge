@@ -26,6 +26,7 @@ bin/
 .env
 bridge
 keys/
+vendor/
 
 # Chainbridge
 config.toml

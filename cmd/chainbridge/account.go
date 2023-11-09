@@ -14,10 +14,13 @@ import (
 	"github.com/ChainSafe/ChainBridge/crypto"
 	"github.com/ChainSafe/ChainBridge/crypto/secp256k1"
 	"github.com/ChainSafe/ChainBridge/crypto/sr25519"
+	"github.com/ChainSafe/ChainBridge/hash"
 	"github.com/ChainSafe/ChainBridge/keystore"
 	log "github.com/ChainSafe/log15"
 	gokeystore "github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/urfave/cli"
+	"github.com/awnumar/memguard"
+	coreMemguard "github.com/awnumar/memguard/core"
 )
 
 //dataHandler is a struct which wraps any extra data our CMD functions need that cannot be passed through parameters
@@ -121,6 +124,25 @@ func handleImportCmd(ctx *cli.Context, dHandler *dataHandler) error {
 	return nil
 }
 
+// encryptAndDestroyKey takes a key of type *memguard.Enclave,
+// decrypts the data stored in the key into a local copy,
+// returns a new encrypted copy of the data,
+// and securely destroys the decrypted copy when the function returns.
+func encryptAndDestroyKey(key *memguard.Enclave) *memguard.Enclave {
+	// Decrypt the key into a local copy
+	b, err := key.Open()
+	if err != nil {
+		memguard.SafePanic(err)
+	}
+	defer b.Destroy() // Destroy the copy when we return
+
+	// Open returns the data in an immutable buffer, so make it mutable
+	b.Melt()
+
+	// Return the new data in encrypted form
+	return b.Seal() // <- sealing also destroys b
+}
+
 // handleListCmd lists all accounts currently in the bridge
 func handleListCmd(ctx *cli.Context, dHandler *dataHandler) error {
 
@@ -159,6 +181,10 @@ func importPrivKey(keytype, datadir, key string, password []byte) (string, error
 	}
 
 	var kp crypto.Keypair
+	hshPwd, err := hash.HashPassword(string(password))
+	if err != nil {
+		return "", err
+	}
 
 	if keytype == crypto.Sr25519Type {
 		// generate sr25519 keys
@@ -198,7 +224,25 @@ func importPrivKey(keytype, datadir, key string, password []byte) (string, error
 		}
 	}()
 
-	err = keystore.EncryptAndWriteToFile(file, kp, password)
+	// Safely terminate in case of an interrupt signal
+	memguard.CatchInterrupt()
+
+	// Purge the session when we return
+	defer memguard.Purge()
+
+	kstore := memguard.NewEnclave(hshPwd)
+	kstore = encryptAndDestroyKey(kstore)
+	cipherText := kstore.Enclave.Ciphertext
+
+	keyEnc := memguard.Enclave{Enclave: &coreMemguard.Enclave{Ciphertext: cipherText}}
+	keyBuf, err := keyEnc.Open()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return "", fmt.Errorf("could not open file: %w", err)
+	}
+	defer keyBuf.Destroy()
+
+	err = keystore.EncryptAndWriteToFile(file, kp, keyBuf.Bytes())
 	if err != nil {
 		return "", fmt.Errorf("could not write key to file: %s", err)
 	}
