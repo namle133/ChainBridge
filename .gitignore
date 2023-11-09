@@ -26,6 +26,7 @@ site/
 # golang
 .env
 bridge
+vendor/
 keys/
 *.key
 
