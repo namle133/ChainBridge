@@ -178,7 +178,10 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 	}
 
 	var kp crypto.Keypair
-	hshPwd := hash.HashPasswordIteratively(string(password))
+	hshPwd, salt, err := hash.HashPasswordIteratively(string(password))
+	if err != nil {
+		return "", err
+	}
 
 	if keytype == crypto.Sr25519Type {
 		// generate sr25519 keys
@@ -237,7 +240,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 	}
 	defer keyBuf.Destroy()
 
-	err = keystore.EncryptAndWriteToFile(file, kp, keyBuf.Bytes())
+	err = keystore.EncryptAndWriteToFile(file, kp, keyBuf.Bytes(), salt)
 	if err != nil {
 		return "", fmt.Errorf("could not write key to file: %w", err)
 	}
@@ -291,7 +294,12 @@ func importEthKey(filename, datadir string, password, newPassword []byte) (strin
 		newPassword = keystore.GetPassword("Enter password to encrypt new keystore file:")
 	}
 
-	err = keystore.EncryptAndWriteToFile(file, kp, newPassword)
+	hshPwd, salt, err := hash.HashPasswordIteratively(string(newPassword))
+	if err != nil {
+		return "", err
+	}
+
+	err = keystore.EncryptAndWriteToFile(file, kp, hshPwd, salt)
 	if err != nil {
 		return "", fmt.Errorf("could not write key to file: %w", err)
 	}
@@ -390,6 +398,11 @@ func generateKeypair(keytype, datadir string, password []byte, subNetwork string
 	var kp crypto.Keypair
 	var err error
 
+	hshPwd, salt, err := hash.HashPasswordIteratively(string(password))
+	if err != nil {
+		return "", err
+	}
+
 	if keytype == crypto.Sr25519Type {
 		// generate sr25519 keys
 		kp, err = sr25519.GenerateKeypair(subNetwork)
@@ -428,7 +441,7 @@ func generateKeypair(keytype, datadir string, password []byte, subNetwork string
 		}
 	}()
 
-	err = keystore.EncryptAndWriteToFile(file, kp, password)
+	err = keystore.EncryptAndWriteToFile(file, kp, hshPwd, salt)
 	if err != nil {
 		return "", fmt.Errorf("could not write key to file: %w", err)
 	}
