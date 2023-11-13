@@ -37,8 +37,8 @@ github.com/ChainSafe/chainbridge-substrate-events v0.0.0-20200715141113-87198532
 github.com/ChainSafe/chainbridge-substrate-events v0.0.0-20200715141113-87198532025e/go.mod h1:H5fNH57wn/j1oLifOnWEqYbfJZcOWzr7jZjKKrUckSQ=
 github.com/ChainSafe/log15 v1.0.0 h1:vRDVtWtVwIH5uSCBvgTTZh6FA58UBJ6+QiiypaZfBf8=
 github.com/ChainSafe/log15 v1.0.0/go.mod h1:5v1+ALHtdW0NfAeeoYyKmzCAMcAeqkdhIg4uxXWIgOg=
-github.com/ChainVerse-Team/chainbridge-utils v0.0.2-beta h1:/silo4Dc3koOGgKKQ1gug5FQs/ljAy/o/kc/HrbhK+I=
-github.com/ChainVerse-Team/chainbridge-utils v0.0.2-beta/go.mod h1:xTogecjpOKlZLDF5xpIq8oFmcW8Oq412nxwCWpnuGOI=
+github.com/ChainVerse-Team/chainbridge-utils v0.0.3-alpha h1:dy8nw4WlF/nPIn6V69I8H4JXtL1kdExF7tnDu2S3gjg=
+github.com/ChainVerse-Team/chainbridge-utils v0.0.3-alpha/go.mod h1:xTogecjpOKlZLDF5xpIq8oFmcW8Oq412nxwCWpnuGOI=
 github.com/ChainVerse-Team/memguard v0.0.1-beta h1:LtBBW7nLTtuFPLITWdGm1bbE57V3SOPD0Pq4JX2kGx0=
 github.com/ChainVerse-Team/memguard v0.0.1-beta/go.mod h1:kD0Rh6/N7KMOhHOFwCTbzNvVlf/0tInVm7FJueXK4Wg=
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
@@ -596,7 +596,6 @@ golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.0.0-20210816183151-1e6c022a8912/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.4.0 h1:Zr2JFtRQNX3BCZ8YtxRE9hNJYC8J6I1MVbMg6owUp18=
 golang.org/x/sys v0.4.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.14.0 h1:Vz7Qs629MkJkGyHxUlRHizWJRG2j8fbQKjELVSNhy7Q=
 golang.org/x/sys v0.14.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
