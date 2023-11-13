@@ -17,6 +17,6 @@ require (
 )
 
 replace (
-	github.com/ChainSafe/chainbridge-utils v1.0.6 => github.com/ChainVerse-Team/chainbridge-utils v0.0.2-beta
+	github.com/ChainSafe/chainbridge-utils v1.0.6 => github.com/ChainVerse-Team/chainbridge-utils v0.0.3-alpha
 	github.com/awnumar/memguard v0.22.3 => github.com/ChainVerse-Team/memguard v0.0.1-beta
 )
