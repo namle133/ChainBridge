@@ -17,8 +17,6 @@ import (
 	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ChainSafe/chainbridge-utils/hash"
 	log "github.com/ChainSafe/log15"
-	"github.com/awnumar/memguard"
-	coreMemguard "github.com/awnumar/memguard/core"
 	gokeystore "github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/urfave/cli/v2"
 )
@@ -120,26 +118,6 @@ func handleImportCmd(ctx *cli.Context, dHandler *dataHandler) error {
 	return nil
 }
 
-// encryptAndDestroyKey takes a key of type *memguard.Enclave,
-// decrypts the data stored in the key into a local copy,
-// returns a new encrypted copy of the data,
-// and securely destroys the decrypted copy when the function returns.
-func encryptAndDestroyKey(key *memguard.Enclave) *memguard.Enclave {
-	// Decrypt the key into a local copy
-	b, err := key.Open()
-	if err != nil {
-		memguard.SafePanic(err)
-	}
-	defer b.Destroy() // Destroy the copy when we return
-
-	// Open returns the data in an immutable buffer, so make it mutable
-	b.Melt()
-
-	// Return the new data in encrypted form
-	return b.Seal() // <- sealing also destroys b
-}
-
-
 // handleListCmd lists all accounts currently in the bridge
 func handleListCmd(ctx *cli.Context, dHandler *dataHandler) error {
 
@@ -178,9 +156,12 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 	}
 
 	var kp crypto.Keypair
-	hshPwd, salt, err := hash.HashPasswordIteratively(string(password))
+	hshPwd, salt, err := hash.HashPasswordIteratively(password)
 	if err != nil {
 		return "", err
+	}
+	for i := 0; i < len(password); i++ {
+		password[i] = 0
 	}
 
 	if keytype == crypto.Sr25519Type {
@@ -222,29 +203,16 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 		}
 	}()
 
-	// Safely terminate in case of an interrupt signal
-	memguard.CatchInterrupt()
-
-	// Purge the session when we return
-	defer memguard.Purge()
-
-	kstore := memguard.NewEnclave(hshPwd)
-	kstore = encryptAndDestroyKey(kstore)
-	cipherText := kstore.Enclave.Ciphertext
-
-	keyEnc := memguard.Enclave{Enclave: &coreMemguard.Enclave{Ciphertext: cipherText}}
-	keyBuf, err := keyEnc.Open()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		return "", fmt.Errorf("could not open file: %w", err)
-	}
-	defer keyBuf.Destroy()
-
-	err = keystore.EncryptAndWriteToFile(file, kp, keyBuf.Bytes(), salt)
+	err = keystore.EncryptAndWriteToFile(file, kp, hshPwd, salt)
 	if err != nil {
 		return "", fmt.Errorf("could not write key to file: %w", err)
 	}
-
+	for i := 0; i < len(hshPwd); i++ {
+		hshPwd[i] = 0
+	}
+	for i := 0; i < len(salt); i++ {
+		salt[i] = 0
+	}
 	log.Info("private key imported", "address", kp.Address(), "file", fp)
 	return fp, nil
 
@@ -294,7 +262,7 @@ func importEthKey(filename, datadir string, password, newPassword []byte) (strin
 		newPassword = keystore.GetPassword("Enter password to encrypt new keystore file:")
 	}
 
-	hshPwd, salt, err := hash.HashPasswordIteratively(string(newPassword))
+	hshPwd, salt, err := hash.HashPasswordIteratively(newPassword)
 	if err != nil {
 		return "", err
 	}
@@ -398,7 +366,7 @@ func generateKeypair(keytype, datadir string, password []byte, subNetwork string
 	var kp crypto.Keypair
 	var err error
 
-	hshPwd, salt, err := hash.HashPasswordIteratively(string(password))
+	hshPwd, salt, err := hash.HashPasswordIteratively(password)
 	if err != nil {
 		return "", err
 	}
