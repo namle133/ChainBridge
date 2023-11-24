@@ -70,8 +70,8 @@ type Chain struct {
 
 // checkBlockstore queries the blockstore for the latest known block. If the latest block is
 // greater than cfg.startBlock, then cfg.startBlock is replaced with the latest known block.
-func setupBlockstore(cfg *Config, kp *secp256k1.Keypair) (*blockstore.Blockstore, error) {
-	bs, err := blockstore.NewBlockstore(cfg.blockstorePath, cfg.id, kp.Address())
+func setupBlockstore(cfg *Config, addr string) (*blockstore.Blockstore, error) {
+	bs, err := blockstore.NewBlockstore(cfg.blockstorePath, cfg.id, addr)
 	if err != nil {
 		return nil, err
 	}
@@ -101,8 +101,10 @@ func InitializeChain(chainCfg *core.ChainConfig, logger log15.Logger, sysErr cha
 		return nil, err
 	}
 	kp, _ := kpI.(*secp256k1.Keypair)
+	//TODO destroy kpI private key
+	kpI = nil
 
-	bs, err := setupBlockstore(cfg, kp)
+	bs, err := setupBlockstore(cfg, kp.Address())
 	if err != nil {
 		return nil, err
 	}
