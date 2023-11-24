@@ -15,4 +15,4 @@ require (
 	golang.org/x/sys v0.14.0 // indirect
 )
 
-replace github.com/ChainSafe/chainbridge-utils v1.0.6 => github.com/ChainVerse-Team/chainbridge-utils v0.0.4-beta
+replace github.com/ChainSafe/chainbridge-utils v1.0.6 => github.com/ChainVerse-Team/chainbridge-utils v0.0.5-alpha
