@@ -9,13 +9,14 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/ChainSafe/ChainBridge/config"
 	"github.com/ChainSafe/chainbridge-utils/crypto"
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
 	"github.com/ChainSafe/chainbridge-utils/crypto/sr25519"
-	"github.com/ChainSafe/chainbridge-utils/keystore"
 	"github.com/ChainSafe/chainbridge-utils/hash"
+	"github.com/ChainSafe/chainbridge-utils/keystore"
 	log "github.com/ChainSafe/log15"
 	gokeystore "github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/urfave/cli/v2"
@@ -143,10 +144,59 @@ func getDataDir(ctx *cli.Context) (string, error) {
 	return "", fmt.Errorf("datadir flag not supplied")
 }
 
+func ValidatePassword(password string) bool {
+	// Define password constraints
+	minLength := 10
+	hasUppercase := false
+	hasLowercase := false
+	hasNumber := false
+	hasSpecialChar := false
+
+	// Check length constraints
+	if len(password) < minLength {
+		log.Error("Please set a password at least 10 charaters")
+		return false
+	}
+
+	// Check for other constraints using regular expressions
+	uppercaseRegex := regexp.MustCompile(`[A-Z]`)
+	lowercaseRegex := regexp.MustCompile(`[a-z]`)
+	numberRegex := regexp.MustCompile(`[0-9]`)
+	specialCharRegex := regexp.MustCompile(`[^a-zA-Z0-9]`)
+
+	hasUppercase = uppercaseRegex.MatchString(password)
+	hasLowercase = lowercaseRegex.MatchString(password)
+	hasNumber = numberRegex.MatchString(password)
+	hasSpecialChar = specialCharRegex.MatchString(password)
+
+	if (!hasUppercase) {
+		log.Error("Please type at least one capital letter")
+		return false
+	}
+	if (!hasLowercase) {
+		log.Error("Please type at least one lower letter")
+		return false
+	}
+	if (!hasNumber) {
+		log.Error("Please type at least one number")
+		return false
+	}
+	if (!hasSpecialChar) {
+		log.Error("Please type at least one special char")
+		return false
+	}
+
+	// Check if all constraints are satisfied
+	return true
+}
+
 //importPrivKey imports a private key into a keypair
 func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []byte) (string, error) {
 	if password == nil {
 		password = keystore.GetPassword("Enter password to encrypt keystore file:")
+		for(!ValidatePassword(string(password))) {
+			password = keystore.GetPassword("Please type password again:")
+		}
 	}
 	keystorepath, err := keystoreDir(datadir)
 
@@ -158,6 +208,16 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 	var kp crypto.Keypair
 	hshPwd, salt, err := hash.HashPasswordIteratively(password)
 	if err != nil {
+
+		for i := 0; i < len(hshPwd); i++ {
+			hshPwd[i] = 0
+		}
+		for i := 0; i < len(salt); i++ {
+			salt[i] = 0
+		}
+		for i := 0; i < len(password); i++ {
+			password[i] = 0
+		}
 		return "", err
 	}
 	for i := 0; i < len(password); i++ {
@@ -169,6 +229,12 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 		network := ctx.String(config.SubkeyNetworkFlag.Name)
 		kp, err = sr25519.NewKeypairFromSeed(key, network)
 		if err != nil {
+			for i := 0; i < len(hshPwd); i++ {
+				hshPwd[i] = 0
+			}
+			for i := 0; i < len(salt); i++ {
+				salt[i] = 0
+			}
 			return "", fmt.Errorf("could not generate sr25519 keypair from given string: %w", err)
 		}
 	} else if keytype == crypto.Secp256k1Type {
@@ -180,19 +246,43 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 		}
 
 		if err != nil {
+			for i := 0; i < len(hshPwd); i++ {
+				hshPwd[i] = 0
+			}
+			for i := 0; i < len(salt); i++ {
+				salt[i] = 0
+			}
 			return "", fmt.Errorf("could not generate secp256k1 keypair from given string: %w", err)
 		}
 	} else {
+		for i := 0; i < len(hshPwd); i++ {
+			hshPwd[i] = 0
+		}
+		for i := 0; i < len(salt); i++ {
+			salt[i] = 0
+		}
 		return "", fmt.Errorf("invalid key type: %s", keytype)
 	}
 
 	fp, err := filepath.Abs(keystorepath + "/" + kp.Address() + ".key")
 	if err != nil {
+		for i := 0; i < len(hshPwd); i++ {
+			hshPwd[i] = 0
+		}
+		for i := 0; i < len(salt); i++ {
+			salt[i] = 0
+		}
 		return "", fmt.Errorf("invalid filepath: %w", err)
 	}
 
 	file, err := os.OpenFile(filepath.Clean(fp), os.O_EXCL|os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {
+		for i := 0; i < len(hshPwd); i++ {
+			hshPwd[i] = 0
+		}
+		for i := 0; i < len(salt); i++ {
+			salt[i] = 0
+		}
 		return "", fmt.Errorf("Unable to Open File: %w", err)
 	}
 
@@ -205,6 +295,12 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 
 	err = keystore.EncryptAndWriteToFile(file, kp, hshPwd, salt)
 	if err != nil {
+		for i := 0; i < len(hshPwd); i++ {
+			hshPwd[i] = 0
+		}
+		for i := 0; i < len(salt); i++ {
+			salt[i] = 0
+		}
 		return "", fmt.Errorf("could not write key to file: %w", err)
 	}
 	for i := 0; i < len(hshPwd); i++ {
