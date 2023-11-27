@@ -186,7 +186,7 @@ func ValidatePassword(password string) bool {
 		return false
 	}
 
-	// Check if all constraints are satisfied
+	log.Info("Password created successfully")
 	return true
 }
 
@@ -235,6 +235,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 			for i := 0; i < len(salt); i++ {
 				salt[i] = 0
 			}
+			kp.DeleteKeyPair()
 			return "", fmt.Errorf("could not generate sr25519 keypair from given string: %w", err)
 		}
 	} else if keytype == crypto.Secp256k1Type {
@@ -252,6 +253,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 			for i := 0; i < len(salt); i++ {
 				salt[i] = 0
 			}
+			kp.DeleteKeyPair()
 			return "", fmt.Errorf("could not generate secp256k1 keypair from given string: %w", err)
 		}
 	} else {
@@ -272,6 +274,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 		for i := 0; i < len(salt); i++ {
 			salt[i] = 0
 		}
+		kp.DeleteKeyPair()
 		return "", fmt.Errorf("invalid filepath: %w", err)
 	}
 
@@ -283,6 +286,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 		for i := 0; i < len(salt); i++ {
 			salt[i] = 0
 		}
+		kp.DeleteKeyPair()
 		return "", fmt.Errorf("Unable to Open File: %w", err)
 	}
 
@@ -301,6 +305,8 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 		for i := 0; i < len(salt); i++ {
 			salt[i] = 0
 		}
+
+		kp.DeleteKeyPair()
 		return "", fmt.Errorf("could not write key to file: %w", err)
 	}
 	for i := 0; i < len(hshPwd); i++ {

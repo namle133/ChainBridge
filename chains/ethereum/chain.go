@@ -101,31 +101,31 @@ func InitializeChain(chainCfg *core.ChainConfig, logger log15.Logger, sysErr cha
 		return nil, err
 	}
 	kp, _ := kpI.(*secp256k1.Keypair)
-	
-	// delete keypair initialize
-	kpI.DeleteKeyPair()
 
 	bs, err := setupBlockstore(cfg, kp.Address())
 	if err != nil {
+		kp.DeleteKeyPair()
 		return nil, err
 	}
 
 	stop := make(chan int)
 	conn := connection.NewConnection(cfg.endpoint, cfg.http, kp, logger, cfg.gasLimit, cfg.maxGasPrice, cfg.gasMultiplier, cfg.egsApiKey, cfg.egsSpeed)
-	// delete keypair
-	kp.DeleteKeyPair()
+	
 	err = conn.Connect()
 	if err != nil {
+		kp.DeleteKeyPair()
 		return nil, err
 	}
 	err = conn.EnsureHasBytecode(cfg.bridgeContract)
 	if err != nil {
+		kp.DeleteKeyPair()
 		return nil, err
 	}
 
 	if cfg.erc20HandlerContract != utils.ZeroAddress {
 		err = conn.EnsureHasBytecode(cfg.erc20HandlerContract)
 		if err != nil {
+			kp.DeleteKeyPair()
 			return nil, err
 		}
 	}
@@ -133,42 +133,50 @@ func InitializeChain(chainCfg *core.ChainConfig, logger log15.Logger, sysErr cha
 	if cfg.genericHandlerContract != utils.ZeroAddress {
 		err = conn.EnsureHasBytecode(cfg.genericHandlerContract)
 		if err != nil {
+			kp.DeleteKeyPair()
 			return nil, err
 		}
 	}
 
 	bridgeContract, err := bridge.NewBridge(cfg.bridgeContract, conn.Client())
 	if err != nil {
+		kp.DeleteKeyPair()
 		return nil, err
 	}
 
 	chainId, err := bridgeContract.ChainID(conn.CallOpts())
 	if err != nil {
+		kp.DeleteKeyPair()
 		return nil, err
 	}
 
 	if chainId != uint8(chainCfg.Id) {
+		kp.DeleteKeyPair()
 		return nil, fmt.Errorf("chainId (%d) and configuration chainId (%d) do not match", chainId, chainCfg.Id)
 	}
 
 	erc20HandlerContract, err := erc20Handler.NewERC20Handler(cfg.erc20HandlerContract, conn.Client())
 	if err != nil {
+		kp.DeleteKeyPair()
 		return nil, err
 	}
 
 	erc721HandlerContract, err := erc721Handler.NewERC721Handler(cfg.erc721HandlerContract, conn.Client())
 	if err != nil {
+		kp.DeleteKeyPair()
 		return nil, err
 	}
 
 	genericHandlerContract, err := GenericHandler.NewGenericHandler(cfg.genericHandlerContract, conn.Client())
 	if err != nil {
+		kp.DeleteKeyPair()
 		return nil, err
 	}
 
 	if chainCfg.LatestBlock {
 		curr, err := conn.LatestBlock()
 		if err != nil {
+			kp.DeleteKeyPair()
 			return nil, err
 		}
 		cfg.startBlock = curr
@@ -179,6 +187,8 @@ func InitializeChain(chainCfg *core.ChainConfig, logger log15.Logger, sysErr cha
 
 	writer := NewWriter(conn, cfg, logger, stop, sysErr, m)
 	writer.setContract(bridgeContract)
+	// delete keypair
+	kp.DeleteKeyPair()
 
 	return &Chain{
 		cfg:      chainCfg,
