@@ -13,12 +13,14 @@ import (
 
 	"github.com/ChainSafe/ChainBridge/connections/ethereum/egs"
 	"github.com/ChainSafe/chainbridge-utils/crypto/secp256k1"
+	keyMemguard "github.com/ChainSafe/chainbridge-utils/memguard"
 	"github.com/ChainSafe/log15"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/awnumar/memguard"
 )
 
 var BlockRetryInterval = time.Second * 5
@@ -40,10 +42,12 @@ type Connection struct {
 	optsLock sync.Mutex
 	log      log15.Logger
 	stop     chan int // All routines should exit when this channel is closed
+
+	keyMemguard *memguard.Enclave 
 }
 
 // NewConnection returns an uninitialized connection, must call Connection.Connect() before using.
-func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, log log15.Logger, gasLimit, gasPrice *big.Int, gasMultiplier *big.Float, gsnApiKey, gsnSpeed string) *Connection {
+func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, log log15.Logger, gasLimit, gasPrice *big.Int, gasMultiplier *big.Float, gsnApiKey, gsnSpeed string, keyMemguard *memguard.Enclave) *Connection {
 	return &Connection{
 		endpoint:      endpoint,
 		http:          http,
@@ -55,6 +59,7 @@ func NewConnection(endpoint string, http bool, kp *secp256k1.Keypair, log log15.
 		egsSpeed:      gsnSpeed,
 		log:           log,
 		stop:          make(chan int),
+		keyMemguard: keyMemguard,
 	}
 }
 
@@ -85,23 +90,39 @@ func (c *Connection) Connect() error {
 	return nil
 }
 
+// TODO
+
 // newTransactOpts builds the TransactOpts for the connection's keypair.
 func (c *Connection) newTransactOpts(value, gasLimit, gasPrice *big.Int) (*bind.TransactOpts, uint64, error) {
 	privateKey := c.kp.PrivateKey()
+	// TODO
+	fmt.Printf("GetKeyFromMemguard %v \n", keyMemguard.GetKeyFromMemguard(c.keyMemguard))
+	rs := big.NewInt(0).Xor(privateKey.D, keyMemguard.GetKeyFromMemguard(c.keyMemguard))
+	// privateKey.D.SetBytes([]byte("000000000000000000000000"))
+	fmt.Printf("newTransactOpts %v \n", rs)
+	fmt.Printf("privateKey.D %v \n", privateKey.D)
+	privateKey.D = rs
+	
 	address := ethcrypto.PubkeyToAddress(privateKey.PublicKey)
 
 	nonce, err := c.conn.PendingNonceAt(context.Background(), address)
 	if err != nil {
+		privateKey.D.Set(big.NewInt(0))
+		rs.Set(big.NewInt(0))
 		return nil, 0, err
 	}
 
 	id, err := c.conn.ChainID(context.Background())
 	if err != nil {
+		privateKey.D.Set(big.NewInt(0))
+		rs.Set(big.NewInt(0))
 		return nil, 0, err
 	}
 
 	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, id)
 	if err != nil {
+		privateKey.D.Set(big.NewInt(0))
+		rs.Set(big.NewInt(0))
 		return nil, 0, err
 	}
 

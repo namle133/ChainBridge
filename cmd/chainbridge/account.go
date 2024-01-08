@@ -4,12 +4,14 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/ChainSafe/ChainBridge/config"
 	"github.com/ChainSafe/chainbridge-utils/crypto"
@@ -20,6 +22,11 @@ import (
 	log "github.com/ChainSafe/log15"
 	gokeystore "github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/urfave/cli/v2"
+)
+
+var (
+	RelayerPrivateKeyFlag = "SRC_PK"
+	EnvFileName = ".env"
 )
 
 //dataHandler is a struct which wraps any extra data our CMD functions need that cannot be passed through parameters
@@ -96,15 +103,9 @@ func handleImportCmd(ctx *cli.Context, dHandler *dataHandler) error {
 		} else {
 			return fmt.Errorf("Must provide a key to import.")
 		}
-	} else if privkeyflag := ctx.String(config.PrivateKeyFlag.Name); privkeyflag != "" {
-		// check if --password is set
-		var password []byte = nil
-		if pwdflag := ctx.String(config.PasswordFlag.Name); pwdflag != "" {
-			password = []byte(pwdflag)
-		}
-
-		_, err = importPrivKey(ctx, keytype, dHandler.datadir, privkeyflag, password)
-	} else {
+	}else if privkeyflag := ctx.String(config.PrivateKeyFlag.Name); privkeyflag != "" {
+		_, err = importPrivKey(ctx, keytype, dHandler.datadir)
+	}else {
 		if keyimport := ctx.Args().First(); keyimport != "" {
 			_, err = importKey(keyimport, dHandler.datadir)
 		} else {
@@ -186,16 +187,76 @@ func ValidatePassword(password string) bool {
 		return false
 	}
 
-	log.Info("Password created successfully")
 	return true
 }
 
+func updateEnvVariable(filename, key, value string) error {
+	// Read the content of the environment file
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	lines := strings.Split(string(content), "\n")
+
+	// Find the line with the key and update its value
+	var updatedContent []string
+	found := false
+	for _, line := range lines {
+		if strings.HasPrefix(strings.TrimSpace(line), key+"=") {
+			updatedContent = append(updatedContent, fmt.Sprintf("%s=%s", key, value))
+			found = true
+		} else {
+			updatedContent = append(updatedContent, line)
+		}
+	}
+
+	// If the key was not found, append it to the content
+	if !found {
+		updatedContent = append(updatedContent, fmt.Sprintf("%s=%s", key, value))
+	}
+
+	// Join the content lines
+	newContent := strings.Join(updatedContent, "\n")
+
+	// Write the updated content back to the file
+	err = ioutil.WriteFile(filename, []byte(newContent), 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 //importPrivKey imports a private key into a keypair
-func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []byte) (string, error) {
+func importPrivKey(ctx *cli.Context, keytype string, datadir string) (string, error) {
+	key := ctx.String(config.PrivateKeyFlag.Name)
+	fmt.Println(config.PrivateKeyFlag.Name)
+	// update private key in env file 
+	// updateEnvVariable(EnvFileName, RelayerPrivateKeyFlag, "00000")
+
+	var password []byte
+	var passwordRetype []byte
 	if password == nil {
-		password = keystore.GetPassword("Enter password to encrypt keystore file:")
-		for(!ValidatePassword(string(password))) {
-			password = keystore.GetPassword("Please type password again:")
+		for {
+			password = keystore.GetPassword("Enter password to encrypt keystore file (10 characters minimum. Must include capital, small case, number, and punctuation mark): ")
+			for(!ValidatePassword(string(password))) {
+				password = keystore.GetPassword("Input error. Please type password (10 characters minimum. Must include capital, small case, number, and punctuation mark): ")
+			}
+			passwordRetype = keystore.GetPassword("Re-enter same password to verify: ")
+			if bytes.Equal(password, passwordRetype) {
+				for i:= 0; i < len(passwordRetype); i++ {
+					passwordRetype[i] = 0
+				}
+				log.Info("Password created successfully")
+				break
+			}
+			for i:= 0; i < len(passwordRetype); i++ {
+				passwordRetype[i] = 0
+			}
+			for i:= 0; i < len(password); i++ {
+				password[i] = 0
+			}
 		}
 	}
 	keystorepath, err := keystoreDir(datadir)
@@ -207,6 +268,9 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 
 	var kp crypto.Keypair
 	hshPwd, salt, err := hash.HashPasswordIteratively(password)
+	for i := 0; i < len(password); i++ {
+		password[i] = 0
+	}
 	if err != nil {
 
 		for i := 0; i < len(hshPwd); i++ {
@@ -215,13 +279,8 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 		for i := 0; i < len(salt); i++ {
 			salt[i] = 0
 		}
-		for i := 0; i < len(password); i++ {
-			password[i] = 0
-		}
+		
 		return "", err
-	}
-	for i := 0; i < len(password); i++ {
-		password[i] = 0
 	}
 
 	if keytype == crypto.Sr25519Type {
@@ -236,6 +295,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 				salt[i] = 0
 			}
 			kp.DeleteKeyPair()
+			kp =  nil
 			return "", fmt.Errorf("could not generate sr25519 keypair from given string: %w", err)
 		}
 	} else if keytype == crypto.Secp256k1Type {
@@ -254,6 +314,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 				salt[i] = 0
 			}
 			kp.DeleteKeyPair()
+			kp =  nil
 			return "", fmt.Errorf("could not generate secp256k1 keypair from given string: %w", err)
 		}
 	} else {
@@ -275,6 +336,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 			salt[i] = 0
 		}
 		kp.DeleteKeyPair()
+		kp =  nil
 		return "", fmt.Errorf("invalid filepath: %w", err)
 	}
 
@@ -287,6 +349,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 			salt[i] = 0
 		}
 		kp.DeleteKeyPair()
+		kp =  nil
 		return "", fmt.Errorf("Unable to Open File: %w", err)
 	}
 
@@ -296,8 +359,10 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 			log.Error("import private key: could not close keystore file")
 		}
 	}()
+	
+	hshPwd = append(hshPwd, salt...)
 
-	err = keystore.EncryptAndWriteToFile(file, kp, hshPwd, salt)
+	err = keystore.EncryptAndWriteToFile(file, kp, hshPwd)
 	if err != nil {
 		for i := 0; i < len(hshPwd); i++ {
 			hshPwd[i] = 0
@@ -316,6 +381,7 @@ func importPrivKey(ctx *cli.Context, keytype, datadir, key string, password []by
 		salt[i] = 0
 	}
 	log.Info("private key imported", "address", kp.Address(), "file", fp)
+	// kp.DeleteKeyPair()
 	return fp, nil
 
 }
@@ -368,8 +434,9 @@ func importEthKey(filename, datadir string, password, newPassword []byte) (strin
 	if err != nil {
 		return "", err
 	}
-
-	err = keystore.EncryptAndWriteToFile(file, kp, hshPwd, salt)
+	hshPwd = append(hshPwd, salt...)
+	err = keystore.EncryptAndWriteToFile(file, kp, hshPwd)
+	
 	if err != nil {
 		return "", fmt.Errorf("could not write key to file: %w", err)
 	}
@@ -510,8 +577,9 @@ func generateKeypair(keytype, datadir string, password []byte, subNetwork string
 			log.Error("generate keypair: could not close keystore file")
 		}
 	}()
-
-	err = keystore.EncryptAndWriteToFile(file, kp, hshPwd, salt)
+	
+	hshPwd = append(hshPwd, salt...)
+	err = keystore.EncryptAndWriteToFile(file, kp, hshPwd)
 	if err != nil {
 		return "", fmt.Errorf("could not write key to file: %w", err)
 	}

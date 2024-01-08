@@ -314,7 +314,7 @@ func TestImportEthKey(t *testing.T) {
 }
 
 func TestImportKey_withPk(t *testing.T) {
-	keyfile, err := importPrivKey(cli.NewContext(app, nil, nil), "", testKeystoreDir, "000000000000000000000000000000000000000000000000000000416c696365", testPassword)
+	keyfile, err := importPrivKey(cli.NewContext(app, nil, nil), "", testKeystoreDir)
 	if err != nil {
 		t.Fatal(err)
 	}

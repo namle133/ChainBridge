@@ -59,7 +59,7 @@ func checkBlockstore(bs *blockstore.Blockstore, startBlock uint64) (uint64, erro
 }
 
 func InitializeChain(cfg *core.ChainConfig, logger log15.Logger, sysErr chan<- error, m *metrics.ChainMetrics) (*Chain, error) {
-	kp, err := keystore.KeypairFromAddress(cfg.From, keystore.SubChain, cfg.KeystorePath, cfg.Insecure)
+	kp,_, err := keystore.KeypairFromAddress(cfg.From, keystore.SubChain, cfg.KeystorePath, cfg.Insecure)
 	if err != nil {
 		return nil, err
 	}
